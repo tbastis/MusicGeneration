@@ -1,6 +1,6 @@
 # MusicGeneration
 
- An application which generates piano pieces using a genetic algorithm. 
+ An application which generates piano pieces using a genetic algorithm.
 
 ## Set-up
 
