@@ -25,7 +25,7 @@ The meaning of the integer that follows depends on a couple characteristics of t
 
 ### Token meanings and value ranges
 
-Due to uncountable bugs in the MidiTok source code, the values are (as far as I can tell) offset by random numbers, but do follow logic that shouldn't prevent us from using them anyway. Below is a description of each type of token, and the values it can take on according to our set parameters in the code. 
+Below is a description of each type of token, and the values it can take on according to our set parameters in the code. 
 
 **BAR**: Indicates bar number...but really doesn't. It's value is always equal to 1.
 
@@ -35,6 +35,6 @@ Due to uncountable bugs in the MidiTok source code, the values are (as far as I 
 
 **VELOCITY**: How hard the key was struck when the note was played, which corresponds to the note's loudness. It's value is in the range [129, 255]
 
-**DURATION**: The length of the note. It's value can be calculated as 255 + (the number of 8th notes long the note is). For example, a quarter note has value 257. While I'm not sure there's technical a cap to this value, we can safely assume it is < 320. 
+**DURATION**: The length of the note. It's value can be calculated as 255 + (the number of 8th notes long the note is). For example, a quarter note has value 257. While I'm not sure there's technically a cap to this value, we can safely assume it is < 320. 
 
 Note that none of the above ranges overlap.
