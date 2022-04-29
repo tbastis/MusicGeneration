@@ -7,9 +7,10 @@ def export_midi(tokens, midi_name):
 
     # This code is duplicated in bar_extractor.py, should be put in common place
     # but idk how.
-    _pitch_range = range(21, 109)
+    # Our parameters
+    _pitch_range = range(0, 127)
     _beat_res = {(0, 4): 8, (4, 12): 4}
-    _nb_velocities = 32
+    _nb_velocities = 127
     _additional_tokens = {'Chord': False, 'Rest': False, 'Tempo': False, 'Program': False,
                           'TimeSignature': False}
 
