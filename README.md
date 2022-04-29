@@ -37,4 +37,4 @@ Below is a description of each type of token, and the values it can take on acco
 
 **DURATION**: The length of the note. It's value can be calculated as 255 + (the number of 8th notes long the note is). For example, a quarter note has value 257. While I'm not sure there's technically a cap to this value, we can safely assume it is < 320. 
 
-Note that none of the above ranges overlap.
+Note that (nicely) none of the above ranges overlap.
