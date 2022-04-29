@@ -10,6 +10,7 @@ def random_bars(n):
         res.append(all_bars[random.randint(0, len(all_bars))])
     return res
 
+#test
 
 # Generate random MIDI file
 # Caution: will overwrite files!
