@@ -18,6 +18,8 @@ def fitness(phrases, measures):
     
     - Trivial implementation at the moment
     """
+
+    #TODO: modify mutation rate as we get further on in generations/fitness scores 
     random.seed()
     return [random.randint(0, 100) for _ in range(len(phrases))]
 
@@ -45,6 +47,8 @@ def mutation(c, muta_rate):
         #mutate something -- pitch up/down, lengthen/shorten?
         pass
     
+    #TODO: w/e was on the paper
+
     return c
      
 
@@ -59,6 +63,7 @@ def crossover(p1, p2, cross_rate):
     c1, c2 = p1.copy(), p2.copy()
     if random.randint(0, 100) <= cross_rate:
         cross_point = random.randint(1, len(p1)-2)
+        #TODO: GenJam's crossover 
 
         c1 = p1[cross_point:] + p2[:cross_point]
         c2 = p2[cross_point:] + p1[:cross_point]
@@ -93,6 +98,11 @@ def generate_pop(data):
     #drop the last phrase if it's too short (doesn't contain enough measures)
     if len(phrases[-1]) != phrase_len:
         phrases = phrases[:-1]
+
+    # print(measures[:5])
+    for i in range(5):
+        print(measures[i])
+        print("\n")
 
     return phrases, measures
 
