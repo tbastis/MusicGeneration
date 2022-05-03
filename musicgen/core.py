@@ -11,6 +11,7 @@ def random_bars(n):
     return res
 
 # print(helpers.all_bars())
+#wtf
 
 def fitness(phrases, measures):
     """
