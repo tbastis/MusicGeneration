@@ -7,10 +7,9 @@ def export_midi(tokens, midi_name):
 
     # This code is duplicated in bar_extractor.py, should be put in common place
     # but idk how.
-    # Our parameters
-    _pitch_range = range(0, 127)
+    _pitch_range = range(21, 109)
     _beat_res = {(0, 4): 8, (4, 12): 4}
-    _nb_velocities = 127
+    _nb_velocities = 32
     _additional_tokens = {'Chord': False, 'Rest': False, 'Tempo': False, 'Program': False,
                           'TimeSignature': False}
 
@@ -18,7 +17,7 @@ def export_midi(tokens, midi_name):
                      _nb_velocities, _additional_tokens)
 
     converted_back_midi = TOKENIZER.tokens_to_midi(tokens)
-    converted_back_midi.dump('musicgen/generated/MIDI/' + midi_name + '.mid')
+    converted_back_midi.dump('generated/MIDI/' + midi_name + '.mid')
     print("Success!")
 
 
@@ -33,5 +32,5 @@ def bars_to_tokens(bars):
 
 def all_bars():
     """Returns all generated bars as 2d list"""
-    with open("musicgen/samples/bars/combined.txt", "rb") as combined_file:
+    with open("samples/bars/combined.txt", "rb") as combined_file:
         return pickle.load(combined_file)
