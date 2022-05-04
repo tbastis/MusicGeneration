@@ -22,12 +22,12 @@ def fitness(phrases, measures):
     """
 
     # TODO: modify mutation rate as we get further on in generations/fitness scores
-    return [chord_fitness(phrase, measures) for phrase in phrases]
+    return [relation_fitness(phrase, measures) for phrase in phrases]
     # return [random.randint(0, 100) for _ in range(len(phrases))]
 
-def chord_fitness(phrase, measures):
+def relation_fitness(phrase, measures):
     """
-    Returns the chord fitness score for each phrase defined as follows:
+    Returns the note relationship fitness score for each phrase defined as follows:
     Notes that are closer together sound better. 
     Fitness score is higher if notes are closer together.
     """
