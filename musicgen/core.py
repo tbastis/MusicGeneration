@@ -22,8 +22,39 @@ def fitness(phrases, measures):
     """
 
     # TODO: modify mutation rate as we get further on in generations/fitness scores
-    random.seed()
-    return [random.randint(0, 100) for _ in range(len(phrases))]
+    return [chord_fitness(phrase, measures) for phrase in phrases]
+    # return [random.randint(0, 100) for _ in range(len(phrases))]
+
+def chord_fitness(phrase, measures):
+    """
+    Returns the chord fitness score for each phrase defined as follows:
+    Notes that are closer together sound better. 
+    Fitness score is higher if notes are closer together.
+    """
+    score = 0
+    total_notes = 0
+    prev_note = 0
+    for i in phrase:
+        for j in measures[i]:
+            if j < 128:
+                total_notes += 1
+                if prev_note > 0:
+                    if abs(j - prev_note) == 0:
+                        score += 90
+                    elif abs(j - prev_note) <= 4:
+                        score += 100
+                    elif abs(j - prev_note) <= 6:
+                        score += 80
+                    elif abs(j - prev_note) <= 8:
+                        score += 70
+                    else:
+                        score += 50
+                prev_note = j
+
+
+    return random.randint(0, 100)
+
+
 
 
 def select_parents(parents, scores, num):
