@@ -32,5 +32,5 @@ def bars_to_tokens(bars):
 
 def all_bars():
     """Returns all generated bars as 3d list (song, bar number, index)"""
-    with open("Musicgen/samples/bars/combined.txt", "rb") as combined_file:
+    with open("samples/bars/combined.txt", "rb") as combined_file:
         return pickle.load(combined_file)

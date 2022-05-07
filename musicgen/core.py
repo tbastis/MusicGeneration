@@ -1,5 +1,13 @@
 import helpers
 import random
+import sys
+
+# Default parameter values
+iters = 5  # number of generations to run through
+# chance that two parents make children (rather than persisting to the next gen)
+cross_rate = 0.9
+muta_rate = 1  # update later -- 1/#measures
+phrase_len = 4  # number of measures per phrase
 
 
 def random_bars(n):
@@ -12,6 +20,49 @@ def random_bars(n):
 
 # print(helpers.all_bars())
 # wtf
+
+
+def setParameters():
+    if (len(sys.argv) != 2):
+        return
+    if (sys.argv[1] != '-c'):
+        return
+
+    temp_iters = input('\nEnter number of generations:')
+    try:
+        assert int(temp_iters) > 0
+        global iters
+        iters = int(temp_iters)
+        print('Value set to ' + str(iters))
+    except:
+        print('Invalid input, defaulting to ' + str(iters))
+
+    temp_cross_rate = input('\nEnter cross rate:')
+    try:
+        assert 0 <= float(temp_cross_rate) and float(temp_cross_rate) <= 1
+        global cross_rate
+        cross_rate = float(temp_cross_rate)
+        print('Value set to ' + str(cross_rate))
+    except:
+        print('Invalid input, defaulting to ' + str(cross_rate))
+
+    temp_muta_rate = input('\nEnter mutation rate:')
+    try:
+        assert 0 <= float(temp_muta_rate) and float(temp_muta_rate) <= 1
+        global muta_rate
+        muta_rate = float(temp_muta_rate)
+        print('Value set to ' + str(muta_rate))
+    except:
+        print('Invalid input, defaulting to ' + str(muta_rate))
+
+    temp_phrase_len = input('\nEnter phrase length:')
+    try:
+        assert int(temp_phrase_len) > 0
+        global phrase_len
+        phrase_len = int(temp_phrase_len)
+        print('Value set to ' + str(phrase_len))
+    except:
+        print('Invalid input, defaulting to ' + str(phrase_len))
 
 
 def fitness(phrases, measures):
@@ -116,6 +167,8 @@ def generate_pop(data):
 
 
 def main():
+    setParameters()
+
     data = helpers.all_bars()
     phrases, measures = generate_pop(data)
     pop_size = len(phrases)
@@ -152,12 +205,6 @@ def main():
 
     return [best_child, best_score]
 
-
-iters = 5  # number of generations to run through
-# chance that two parents make children (rather than persisting to the next gen)
-cross_rate = 0.9
-muta_rate = 1  # update later -- 1/#measures
-phrase_len = 4  # number of measures per phrase
 
 if __name__ == "__main__":
     main()
