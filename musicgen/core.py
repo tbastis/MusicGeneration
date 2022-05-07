@@ -70,8 +70,83 @@ def fitness(phrases, measures):
     """
 
     # TODO: modify mutation rate as we get further on in generations/fitness scores
-    random.seed()
-    return [random.randint(0, 100) for _ in range(len(phrases))]
+    return [relation_fitness(phrase, measures) + direction_fitness(phrase, measures) 
+    + end_fitness(phrase, measures) for phrase in phrases]
+    # return [random.randint(0, 100) for _ in range(len(phrases))]
+
+def relation_fitness(phrase, measures):
+    """
+    Returns the note relationship fitness score for each phrase defined as follows:
+    Notes that are closer together sound better. 
+    Fitness score is higher if notes are closer together.
+    """
+    score = 0
+    total_notes = 0
+    prev_note = 0
+    for i in phrase:
+        for j in measures[i]:
+            if j < 128:
+                total_notes += 1
+                if prev_note > 0:
+                    if abs(j - prev_note) == 0:
+                        score += 90
+                    elif abs(j - prev_note) <= 4:
+                        score += 100
+                    elif abs(j - prev_note) <= 6:
+                        score += 80
+                    elif abs(j - prev_note) <= 8:
+                        score += 70
+                    else:
+                        score += 50
+                prev_note = j
+    return score / (total_notes - 1)
+
+def direction_fitness(phrase, measures):
+    """
+    Returns the contour fitness score for each phrase defined as follows:
+    Notes that form a rising melody or falling melody score highest
+    Stable melodies score high
+    Unstable melodies score low
+    """
+    score = 0
+    total_notes = 0
+    prev_note1 = 0
+    prev_note2 = 0
+    for i in phrases:
+        for j in measures[i]:
+            if j < 128:
+                total_notes += 1
+                if j < prev_note1 & prev_note1 < prev_note2:
+                    score += 100
+                elif j > prev_note1 & prev_note1 > prev_note2:
+                    score += 100
+                elif j == prev_note1 & prev_note1 == prev_note2:
+                    score += 90
+                else:
+                    score += 70
+                prev_note2 = prev_note1
+                prev_note1 = j
+    return score / (total_notes - 2)
+
+def end_fitness(phrase, measures):
+    """
+    Returns the end note fitness score of the phrase.
+    Phrase scores high if the end note is the same as the start note.
+    Phrase scores lower if the end note is different than the start note.
+    """
+    for i in measures[phrase[0]]:
+        if i < 128:
+            first_note = i
+            break
+    
+    for i in measures[phrase[len(phrase) - 1]]:
+        if i < 128:
+            last_note = i
+    
+    if last_note == first_note:
+        return 100
+    else:
+        return 70
 
 
 def select_parents(parents, scores, num):
