@@ -22,7 +22,8 @@ def fitness(phrases, measures):
     """
 
     # TODO: modify mutation rate as we get further on in generations/fitness scores
-    return [relation_fitness(phrase, measures) for phrase in phrases]
+    return [relation_fitness(phrase, measures) + direction_fitness(phrase, measures) 
+    for phrase in phrases]
     # return [random.randint(0, 100) for _ in range(len(phrases))]
 
 def relation_fitness(phrase, measures):
@@ -50,9 +51,34 @@ def relation_fitness(phrase, measures):
                     else:
                         score += 50
                 prev_note = j
+    return score / (total_notes - 1)
 
-
-    return random.randint(0, 100)
+def direction_fitness(phrase, measures):
+    """
+    Returns the contour fitness score for each phrase defined as follows:
+    Notes that form a rising melody or falling melody score highest
+    Stable melodies score high
+    Unstable melodies score low
+    """
+    score = 0
+    total_notes = 0
+    prev_note1 = 0
+    prev_note2 = 0
+    for i in phrases:
+        for j in measures[i]:
+            if j < 128:
+                total_notes += 1
+                if j < prev_note1 & prev_note1 < prev_note2:
+                    score += 100
+                elif j > prev_note1 & prev_note1 > prev_note2:
+                    score += 100
+                elif j == prev_note1 & prev_note1 == prev_note2:
+                    score += 90
+                else:
+                    score += 70
+                prev_note2 = prev_note1
+                prev_note1 = j
+    return score / (total_notes - 2)
 
 
 
