@@ -23,7 +23,7 @@ def fitness(phrases, measures):
 
     # TODO: modify mutation rate as we get further on in generations/fitness scores
     return [relation_fitness(phrase, measures) + direction_fitness(phrase, measures) 
-    for phrase in phrases]
+    + end_fitness(phrase, measures) for phrase in phrases]
     # return [random.randint(0, 100) for _ in range(len(phrases))]
 
 def relation_fitness(phrase, measures):
@@ -80,7 +80,25 @@ def direction_fitness(phrase, measures):
                 prev_note1 = j
     return score / (total_notes - 2)
 
-
+def end_fitness(phrase, measures):
+    """
+    Returns the end note fitness score of the phrase.
+    Phrase scores high if the end note is the same as the start note.
+    Phrase scores lower if the end note is different than the start note.
+    """
+    for i in measures[phrase[0]]:
+        if i < 128:
+            first_note = i
+            break
+    
+    for i in measures[phrase[len(phrase) - 1]]:
+        if i < 128:
+            last_note = i
+    
+    if last_note == first_note:
+        return 100
+    else:
+        return 70
 
 
 def select_parents(parents, scores, num):
