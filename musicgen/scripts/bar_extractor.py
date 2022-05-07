@@ -44,16 +44,16 @@ for midi_name in os.listdir('musicgen/samples/bar_sources'):
 
     print('Extracting bars from ' + midi_name)
     midi = MidiFile('musicgen/samples/bar_sources/' + midi_name)
-    if (midi_name == "pitch_test.mid"):
-        print(TOKENIZER.midi_to_tokens(midi))
     tokens = TOKENIZER.midi_to_tokens(midi)[0]
 
-    # Save bars to individual file and combined list in memory
+    # Save bars to combined list in memory
+    bars = tokens_to_bars(tokens)
+    combined.append(bars)
+
+    # Save bars to individual files (for auditing purposes)
     with open('musicgen/samples/bars/' + midi_name + '_bars.txt', 'w') as filehandle:
-        bars = tokens_to_bars(tokens)
         for bar in bars:
             filehandle.write('%s\n' % bar)
-            combined.append(bar)
 
     print('Successfully extracted bars from ' + midi_name + '! \n')
 
