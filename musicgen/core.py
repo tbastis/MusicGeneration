@@ -43,13 +43,26 @@ def mutation(c, muta_rate):
     Returns the a mutated phrase, with mutation happening
     with a probability of `muta_rate`.
     """
-
     if random.randint(0, 100) < muta_rate:
-        #mutate something -- pitch up/down, lengthen/shorten?
+        case = random.randint(0, 5)
+        match case:
+            case 1:
+                #retrograde: prime in reverse order (last to first, first to last)
+                c = c[::-1]
+
+            case 2: 
+                #inversion 
+                pass
+
+            case 3: 
+                pass
+            #transposition
+
+            case 4:
+                pass
+            #sequencing
         pass
     
-    #TODO: w/e was on the paper
-
     return c
      
 
@@ -64,11 +77,41 @@ def crossover(p1, p2, cross_rate):
     c1, c2 = p1.copy(), p2.copy()
     if random.randint(0, 100) <= cross_rate:
         cross_point = random.randint(1, len(p1)-2)
-        #TODO: GenJam's crossover 
 
         c1 = p1[cross_point:] + p2[:cross_point]
         c2 = p2[cross_point:] + p1[:cross_point]
 
+    #compare 4x4xmeasure_len ~ 4x4x4
+
+    return [c1, c2]
+
+def crossover_genjam(p1, p2, cross_rate, measures):
+    """
+    Crossover two parents with some probability to create 
+    new children. Otherwise, the parents are carried through
+    to the next generation.
+
+    Crossover point is determined by the index at which the starting and 
+    ending notes between the two phrases differ the least.
+
+    Returns two children in an array [child1, child2]
+    """
+    c1, c2 = p1.copy(), p2.copy()
+    if random.randint(0, 100) <= cross_rate:
+        cross_point = 0
+        for i in range(phrase_len):
+            if i == 0: continue #skip comparing first one 
+
+            end_c1n = measures[c1[i]][:-1][1] #child1's ending note
+            start_c2n = measures[c2[i]][0][1] #child2's starting note
+
+            old_best = measures[c2[cross_point]][0][1] - measures[c1[cross_point]][:-1][1]
+            if start_c2n - end_c1n <= old_best:
+                cross_point = i
+            #possible problem: ignores duration --> simultaneous notes
+
+        c1 = p1[cross_point:] + p2[:cross_point]
+        c2 = p2[cross_point:] + p1[:cross_point]
     return [c1, c2]
 
 
