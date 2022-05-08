@@ -116,11 +116,11 @@ def relation_fitness(phrase):
                     elif abs(note - prev_note) <= 4:
                         score += 100
                     elif abs(note - prev_note) <= 6:
-                        score += 80
+                        score += 90
                     elif abs(note - prev_note) <= 8:
-                        score += 70
+                        score += 80
                     else:
-                        score += 50
+                        score += 70
                 prev_note = note
     return score / (total_notes - 1)
 
@@ -147,7 +147,7 @@ def direction_fitness(phrase):
                 elif note == prev_note1 & prev_note1 == prev_note2:
                     score += 90
                 else:
-                    score += 70
+                    score += 80
                 prev_note2 = prev_note1
                 prev_note1 = note
     return score / (total_notes - 2)
