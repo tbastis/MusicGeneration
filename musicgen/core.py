@@ -6,13 +6,13 @@ import math
 import numpy as np
 
 # Default parameter values
-iters = 4  # number of generations to run through
+iters = 25  # number of generations to run through
 # chance that two parents make children (rather than persisting to the next gen)
-cross_rate = 50
-muta_rate = 10  # update later -- 1/#measures
+cross_rate = 10
+muta_rate = 50  # update later -- 1/#measures
 phrase_len = 4  # number of measures per phrase
-output_len = 4 # number of measures you want output to be
-output_name = 'default'
+output_len = 16 # number of measures you want output to be
+file_name = 'default'
 
 
 def random_measures(n):
@@ -30,7 +30,16 @@ def setParameters():
     if (sys.argv[1] != '-c'):
         return
 
-    temp_iters = input('\nEnter number of generations:')
+    temp_file_name = input('\nEnter output filename: ')
+    try:
+        assert len(str(temp_file_name)) >= 1
+        global file_name
+        file_name = str(temp_file_name)
+        print('Value set to ' + file_name)
+    except:
+        print('Invalid input, defaulting to ' + file_name)
+
+    temp_iters = input('\nEnter number of generations: ')
     try:
         assert int(temp_iters) > 0
         global iters
@@ -39,7 +48,7 @@ def setParameters():
     except:
         print('Invalid input, defaulting to ' + str(iters))
 
-    temp_cross_rate = input('\nEnter cross rate:')
+    temp_cross_rate = input('\nEnter cross rate: ')
     try:
         assert 0 <= int(temp_cross_rate) and int(temp_cross_rate) <= 100
         global cross_rate
@@ -48,7 +57,7 @@ def setParameters():
     except:
         print('Invalid input, defaulting to ' + str(cross_rate))
 
-    temp_muta_rate = input('\nEnter mutation rate:')
+    temp_muta_rate = input('\nEnter mutation rate: ')
     try:
         assert 0 <= int(temp_muta_rate) and int(temp_muta_rate) <= 100
         global muta_rate
@@ -57,7 +66,7 @@ def setParameters():
     except:
         print('Invalid input, defaulting to ' + str(muta_rate))
 
-    temp_phrase_len = input('\nEnter phrase length:')
+    temp_phrase_len = input('\nEnter phrase length: ')
     try:
         assert int(temp_phrase_len) > 0
         global phrase_len
@@ -66,8 +75,17 @@ def setParameters():
     except:
         print('Invalid input, defaulting to ' + str(phrase_len))
 
+    temp_output_len = input('\nEnter desired output length (in measures): ')
+    try:
+        assert int(temp_output_len) >= phrase_len
+        global output_len
+        output_len = int(temp_output_len)
+        print('Value set to ' + str(output_len))
+    except:
+        print('Invalid input, defaulting to ' + str(output_len))
 
-def fitness(phrases, measures):
+
+def fitness(phrases):
     """
     Returns a fitness score for each phrase
 
@@ -75,11 +93,10 @@ def fitness(phrases, measures):
     """
 
     # TODO: modify mutation rate as we get further on in generations/fitness scores
-    return [relation_fitness(phrase, measures) + direction_fitness(phrase, measures) 
-    + end_fitness(phrase, measures) for phrase in phrases]
-    # return [random.randint(0, 100) for _ in range(len(phrases))]
+    return [relation_fitness(phrase) + direction_fitness(phrase) 
+    + end_fitness(phrase) for phrase in phrases]
 
-def relation_fitness(phrase, measures):
+def relation_fitness(phrase):
     """
     Returns the note relationship fitness score for each phrase defined as follows:
     Notes that are closer together sound better. 
@@ -88,25 +105,26 @@ def relation_fitness(phrase, measures):
     score = 0
     total_notes = 0
     prev_note = 0
-    for i in phrase:
-        for j in measures[i]:
-            if j < 128:
+    for measure in phrase:
+        for token in measure:
+            if (2 <= token and token <= 128):
+                note = token
                 total_notes += 1
                 if prev_note > 0:
-                    if abs(j - prev_note) == 0:
+                    if abs(note - prev_note) == 0:
                         score += 90
-                    elif abs(j - prev_note) <= 4:
+                    elif abs(note - prev_note) <= 4:
                         score += 100
-                    elif abs(j - prev_note) <= 6:
+                    elif abs(note - prev_note) <= 6:
                         score += 80
-                    elif abs(j - prev_note) <= 8:
+                    elif abs(note - prev_note) <= 8:
                         score += 70
                     else:
                         score += 50
-                prev_note = j
+                prev_note = note
     return score / (total_notes - 1)
 
-def direction_fitness(phrases, measures):
+def direction_fitness(phrase):
     """
     Returns the contour fitness score for each phrase defined as follows:
     Notes that form a rising melody or falling melody score highest
@@ -117,38 +135,39 @@ def direction_fitness(phrases, measures):
     total_notes = 0
     prev_note1 = 0
     prev_note2 = 0
-    for i in phrases:
-        for j in measures[i]:
-            if j < 128:
+    for measure in phrase:
+        for token in measure:
+            if (2 <= token and token <= 128):
+                note = token
                 total_notes += 1
-                if j < prev_note1 & prev_note1 < prev_note2:
+                if note < prev_note1 & prev_note1 < prev_note2:
                     score += 100
-                elif j > prev_note1 & prev_note1 > prev_note2:
+                elif note > prev_note1 & prev_note1 > prev_note2:
                     score += 100
-                elif j == prev_note1 & prev_note1 == prev_note2:
+                elif note == prev_note1 & prev_note1 == prev_note2:
                     score += 90
                 else:
                     score += 70
                 prev_note2 = prev_note1
-                prev_note1 = j
+                prev_note1 = note
     return score / (total_notes - 2)
 
-def end_fitness(phrase, measures):
+def end_fitness(phrase):
     """
     Returns the end note fitness score of the phrase.
     Phrase scores high if the end note is the same as the start note.
     Phrase scores lower if the end note is different than the start note.
     """
-    for i in measures[phrase[0]]:
-        if i < 128:
-            first_note = i
-            break
+    # for i in measures[phrase[0]]:
+    #     if i < 128:
+    #         first_note = i
+    #         break
     
-    for i in measures[phrase[len(phrase) - 1]]:
-        if i < 128:
-            last_note = i
+    # for i in measures[phrase[len(phrase) - 1]]:
+    #     if i < 128:
+    #         last_note = i
     
-    if last_note == first_note:
+    if phrase[0][2] == phrase[-1][-3]:
         return 100
     else:
         return 70
@@ -168,47 +187,61 @@ def select_parents(parents, scores, num):
         
     return best_parent
 
-def mutate(phrase, measures, muta_rate):
+def mutate(phrase, muta_rate):
     """
-    returns mutated measures within the given phrase with a probability of `muta_rate`.
+    Mutates the given phrase in some way with with a probability of `muta_rate`.
     """
     if random.randint(0, 100) < muta_rate:
 
-        phrase_index = random.randint(0, phrase_len - 1)
-        pitch_indices = helpers.get_pitch_indices(measures[phrase[phrase_index]], False)
+        measure = random.randint(0, phrase_len - 1)
+        pitch_indices = helpers.get_pitch_indices(phrase[measure], include_chords=False)
 
         match random.randint(0, 6):
             case 0:
-                # reverse pitches of notes within the phrase
+                # reverse pitches of notes within the measure
                 i = 0
                 j = len(pitch_indices) - 1
                 while (i < j):
-                    temp = measures[phrase[phrase_index]][pitch_indices[i]] 
-                    measures[phrase[phrase_index]][pitch_indices[i]] = measures[phrase[phrase_index]][pitch_indices[j]] 
-                    measures[phrase[phrase_index]][pitch_indices[j]] = temp
+                    temp = phrase[measure][pitch_indices[i]] 
+                    phrase[measure][pitch_indices[i]] = phrase[measure][pitch_indices[j]] 
+                    phrase[measure][pitch_indices[i]] = temp
                     i+=1
                     j-=1
 
             case 1|2: 
-                #transposition: raise or lower pitch of all notes  in phrase by same amount
-                change = int(np.random.normal(0, 10, 1)[0])
+                #transposition: raise or lower pitch of all notes in measure by same amount
+                change = int(np.random.normal(0, 8, 1)[0])
+                if (change < -20):
+                    change = -20
+                if (change > 20):
+                    change = 20
                 for i in range(len(pitch_indices)):
-                    measures[phrase[phrase_index]][pitch_indices[i]] += change
+                    pitch = phrase[measure][pitch_indices[i]] + change
+                    if (pitch < 2 or 128 < pitch):
+                        phrase[measure][pitch_indices[i]] -= change
+                    else:
+                        phrase[measure][pitch_indices[i]] += change
+                    
 
             case 3|4:
-                # raise or lower pitch of 1 note
-                change = int(np.random.normal(0, 10, 1)[0])
+                # raise or lower pitch of 1 note in measure
+                change = int(np.random.normal(0, 8, 1)[0])
+                if (change < -20):
+                    change = -20
+                if (change > 20):
+                    change = 20
                 note_index = random.randint(0, len(pitch_indices) - 1)
-                for i in range(len(pitch_indices)):
-                    measures[phrase[phrase_index]][pitch_indices[note_index]] += change
+                pitch = phrase[measure][pitch_indices[note_index]] + change
+                if (pitch < 2 or 128 < pitch):
+                    phrase[measure][pitch_indices[note_index]] -= change
+                else:
+                    phrase[measure][pitch_indices[note_index]] += change
 
             case 5|6:
-                #One note randomly matches the pitch of another note
+                # One note randomly changes to match the pitch of another note
                 note1_index = random.randint(0, len(pitch_indices) - 1)
                 note2_index = random.randint(0, len(pitch_indices) - 1)
-                measures[phrase[phrase_index]][pitch_indices[note1_index]] = measures[phrase[phrase_index]][pitch_indices[note2_index]] 
-
-    return measures
+                phrase[measure][pitch_indices[note1_index]] = phrase[measure][pitch_indices[note2_index]] 
      
 
 def crossover_rand(p1, p2, cross_rate):
@@ -230,7 +263,7 @@ def crossover_rand(p1, p2, cross_rate):
 
     return [c1, c2]
 
-def crossover_min_dist(p1, p2, cross_rate, measures):
+def crossover_min_dist(parent1, parent2, cross_rate):
     """
     Crossover two parents with some probability to create 
     new children. Otherwise, the parents are carried through
@@ -242,134 +275,106 @@ def crossover_min_dist(p1, p2, cross_rate, measures):
 
     Returns two children in an array [child1, child2]
     """
-    c1, c2 = p1.copy(), p2.copy()
+
+    child1, child2 = parent1.copy(), parent2.copy()
+
     if random.randint(0, 100) <= cross_rate:
         cross_point = 0
         least_dist = math.inf
         for i in range(phrase_len):
             if i == 0: continue #skip comparing first one 
 
-            end_c1n = measures[c1[i-1]][-3] #pitch of final note in child 1 measure before
-            start_c2n = measures[c2[i]][1] #pitch of first note in child 2 current measure
+            end_p1n = parent1[i-1][-3] #pitch of final note in parent 1 measure before
+            start_p2n = parent2[i][2] #pitch of first note in parent 2 current measure
 
-            end_c2n = measures[c2[i-1]][-3] #pitch of final note in child 2 measure before
-            start_c1n = measures[c2[i]][1] #pitch of first note in child 1 current measure
+            end_p2n = parent2[i-1][-3] #pitch of final note in parent 2 measure before
+            start_p1n = parent1[i][2] #pitch of first note in parent 1 current measure
 
-            dist = abs(end_c1n - start_c2n) + abs(end_c2n + start_c1n)
+            dist = abs(end_p1n - start_p2n) + abs(end_p2n + start_p1n)
             
             if (dist < least_dist):
                 cross_point = i
                 least_dist = dist
 
-            #possible problem: ignores duration --> simultaneous notes?
+        child1 = parent1[:cross_point:] + parent2[cross_point:]
+        child2 = parent2[:cross_point:] + parent1[cross_point:]
 
-        c1 = p1[:cross_point:] + p2[cross_point:]
-        c2 = p2[:cross_point:] + p1[cross_point:]
-    return [c1, c2]
+    return [child1, child2]
 
 
-def generate_pop(data):
+def generate_pop(measures):
     """
-    Returns a tuple containing an array of phrases, measures.
-
-    Each phrase is an index of the measures array, indicating
-    which measures compose that phrase.
+    Chops measures into phrases of length set by phrase_len
     """
     phrases = []
-    measures = []
 
     curr_len = 0  # tracks number of measures in current phrase
     temp_phrase = []
-    index = 0
-    for i in range(len(data)):  # For each song
-        for j in range(len(data[i])):
-            measure = data[i][j][1:]  # chop off the 1
-            measures.append(measure)
 
-            temp_phrase += [index]
-            index += 1
+    for i in range(len(measures)):  # For each song
+        for j in range(len(measures[i])):
+
+            temp_phrase.append(measures[i][j])
 
             # append to phrases if current phrase is long enough
-            curr_len = (curr_len+1) % phrase_len
+            curr_len = (curr_len + 1) % phrase_len
             if curr_len == 0:
-                phrases += [temp_phrase]
+                phrases.append(temp_phrase)
                 temp_phrase = []
 
         # drop the last phrase if it's too short (doesn't contain enough measures)
         temp_phrase = []
         curr_len = 0
 
-    # for i in range(100):
-    #     print(measures[i])
-    #     print("\n")
-
-    # print(phrases)
-
-    return phrases, measures
+    return phrases
 
 
 def main():
     setParameters()
 
-    data = helpers.all_measures()
-    phrases, measures = generate_pop(data)
+    phrases = generate_pop(helpers.all_measures())
     pop_size = len(phrases)
 
-    #begin genetic stuff
     for curr_gen in range(iters):
-        scores = fitness(phrases, measures)
 
-        fitness_threshold = np.median(scores)
-        print(">gen%d, new median score = %.3f" % (curr_gen, fitness_threshold))
+        # Score current generation
+        scores = fitness(phrases)
+        percentile = 0.25
+        fitness_threshold = np.percentile(scores, percentile)
+        print(">gen %d, new %dth percentile score = %.3f" % (curr_gen+1, percentile*100, fitness_threshold))
 
-        # fitness_threshold = 200
-
+        # Select most fit parents
         parents = []
         for i in range(len(phrases)):
-            if scores[i] > fitness_threshold:
+            if scores[i] >= fitness_threshold:
                 parents.append(phrases[i])
-
-        # # find best child
-        # for i in range(len(phrases)):
-        #     if scores[i] > best_score:
-        #         best_child, best_score = phrases[i], scores[i]
-        #         print(">gen%d, new best %s = %.3f" %
-        #               (curr_gen,  best_child, best_score))
-
-        # find parents
-        # parents = [select_parents(phrases, scores, 3) for _ in range(pop_size)]
-        
 
         # create next generation
         children = []
-        for j in range(0, pop_size, 2):
+        for j in range(0, len(parents), 2):
+
             # skip iteration if single parent
             if j >= len(parents) - 2:
                 continue
 
-            p1, p2 = parents[j], parents[j+1]
+            parent1, parent2 = parents[j], parents[j+1]
 
-            for c in crossover_min_dist(p1, p2, cross_rate, measures):
-                measures = mutate(c, measures, muta_rate)
-                children.append(c)
+            for child in crossover_min_dist(parent1, parent2, cross_rate):
+                mutate(child, muta_rate)
+                children.append(child)
 
         phrases = children
         
     
-    scores = fitness(phrases, measures)
-    best_phrases = helpers.best_phrases(phrases, scores, output_len)
-    best_measures = helpers.phrases_to_measures(best_phrases, measures)
+    scores = fitness(phrases)
+    best_phrases = helpers.best_phrases(phrases, scores, output_len // phrase_len)
+    best_measures = helpers.phrases_to_measures(best_phrases)
     tokens = helpers.measures_to_tokens(best_measures)
-    print(tokens)
-    helpers.export_midi(tokens, output_name)
-
-if __name__ == "__main__":
-    main()
-
-# Generate random MIDI file
-# Caution: will overwrite files!
-# helpers.export_midi(helpers.measures_to_tokens(random_measures(10)), 'random_test_4')
+    helpers.export_midi(tokens, file_name)
 
 def random_midi():
     helpers.export_midi(helpers.measures_to_tokens(
         random_measures(10)), 'random_test_4')
+
+if __name__ == "__main__":
+    main()

@@ -28,13 +28,11 @@ def measures_to_tokens(measures):
             res[0].append(i)
     return res
 
-def phrases_to_measures(phrases, measures):
+def phrases_to_measures(phrases):
     """Converts array of phrases to array of measures"""
     result = []
-    for phrase_index in range(len(phrases)):
-        for i in phrases[phrase_index]:
-            measure = measures[i]
-            measure.insert(0,1)
+    for phrase in phrases:
+        for measure in phrase:
             result.append(measure)
     return result
 
