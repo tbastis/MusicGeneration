@@ -333,7 +333,6 @@ def main():
     setParameters()
 
     phrases = generate_pop(helpers.all_measures())
-    pop_size = len(phrases)
 
     for curr_gen in range(iters):
 
@@ -351,6 +350,11 @@ def main():
 
         # create next generation
         children = []
+
+        # while (len(children) < pop_size):
+        #     couple_index = np.random.choice(range(len(parents)), 2, False)
+        #     parent1 = parents[couple_index[0]]
+        #     parent2 = parents[couple_index[1]]
         for j in range(0, len(parents), 2):
 
             # skip iteration if single parent
