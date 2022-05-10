@@ -17,7 +17,7 @@ def export_midi(tokens, midi_name):
                      _nb_velocities, _additional_tokens)
 
     converted_back_midi = TOKENIZER.tokens_to_midi(tokens)
-    converted_back_midi.dump('generated/MIDI/' + midi_name + '.mid')
+    converted_back_midi.dump('musicgen/generated/MIDI/' + midi_name + '.mid')
     print("Success!")
 
 def measures_to_tokens(measures):
@@ -38,7 +38,7 @@ def phrases_to_measures(phrases):
 
 def all_measures():
     """Returns all generated measures as 3d list (song, measure number, index)"""
-    with open("samples/bars/combined.txt", "rb") as combined_file:
+    with open("musicgen/samples/bars/combined.txt", "rb") as combined_file:
         return pickle.load(combined_file)
 
 def get_pitch_indices(measure, include_chords):
