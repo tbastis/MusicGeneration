@@ -6,10 +6,10 @@ import math
 import numpy as np
 
 # Default parameter values
-iters = 25  # number of generations to run through
+iters = 30  # number of generations to run through
 # chance that two parents make children (rather than persisting to the next gen)
 cross_rate = 10
-muta_rate = 50  # update later -- 1/#measures
+muta_rate = 100  # update later -- 1/#measures
 phrase_len = 4  # number of measures per phrase
 output_len = 16 # number of measures you want output to be
 file_name = 'default'
@@ -93,8 +93,8 @@ def fitness(phrases):
     """
 
     # TODO: modify mutation rate as we get further on in generations/fitness scores
-    return [relation_fitness(phrase) + direction_fitness(phrase) 
-    + end_fitness(phrase) for phrase in phrases]
+    return [(relation_fitness(phrase) + direction_fitness(phrase) 
+    + end_fitness(phrase))/3 for phrase in phrases]
 
 def relation_fitness(phrase):
     """
