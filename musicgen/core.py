@@ -6,9 +6,9 @@ import math
 import numpy as np
 
 # Default parameter values
-iters = 30  # number of generations to run through
+iters = 25  # number of generations to run through
 # chance that two parents make children (rather than persisting to the next gen)
-cross_rate = 10
+cross_rate = 70
 muta_rate = 100  # update later -- 1/#measures
 phrase_len = 4  # number of measures per phrase
 output_len = 16 # number of measures you want output to be
@@ -337,6 +337,7 @@ def main():
     for curr_gen in range(iters):
 
         # Score current generation
+        print(len(phrases))
         scores = fitness(phrases)
         filter_percentile = 10
         fitness_threshold = np.percentile(scores, filter_percentile)
@@ -368,14 +369,12 @@ def main():
 
         phrases = children
         
-    
     scores = fitness(phrases)
-    best_indices = helpers.best_phrase_indices(phrases, scores, output_len // phrase_len)
+    best_phrases = helpers.best_phrases(phrases, scores, output_len // phrase_len)
     res_phrases = []
-    res_scores = []
-    for i in best_indices:
-        res_phrases.append(phrases[i])
-        res_scores.append(scores[i])
+    res_scores = fitness(best_phrases)
+    for i in range(len(best_phrases)):
+        res_phrases.append(best_phrases[i])
 
     print("Final score: " + str(round(np.mean(res_scores), 3)))
 

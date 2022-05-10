@@ -41,8 +41,8 @@ TOKENIZER = REMI(_pitch_range, _beat_res,
 combined = []
 
 # for midi_name in os.listdir('musicgen/samples/bar_sources'):
-midi_name = "bach_suite_no_1.mid"
-for i in range(100):
+midi_name = "tchaikovksy_sugar_plum.mid"
+for i in range(150):
 
     print('Extracting bars from ' + midi_name)
     midi = MidiFile('musicgen/samples/bar_sources/' + midi_name)
