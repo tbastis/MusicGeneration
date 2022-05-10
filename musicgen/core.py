@@ -338,9 +338,11 @@ def main():
 
         # Score current generation
         scores = fitness(phrases)
-        percentile = 0.25
-        fitness_threshold = np.percentile(scores, percentile)
-        print(">gen %d, new %dth percentile score = %.3f" % (curr_gen+1, percentile*100, fitness_threshold))
+        filter_percentile = 10
+        fitness_threshold = np.percentile(scores, filter_percentile)
+        
+        top_percentile = np.percentile(scores, 99)
+        print(">gen %d, new 99th percentile score = %.3f" % (curr_gen+1, top_percentile))
 
         # Select most fit parents
         parents = []
@@ -351,10 +353,7 @@ def main():
         # create next generation
         children = []
 
-        # while (len(children) < pop_size):
-        #     couple_index = np.random.choice(range(len(parents)), 2, False)
-        #     parent1 = parents[couple_index[0]]
-        #     parent2 = parents[couple_index[1]]
+
         for j in range(0, len(parents), 2):
 
             # skip iteration if single parent
@@ -371,9 +370,17 @@ def main():
         
     
     scores = fitness(phrases)
-    best_phrases = helpers.best_phrases(phrases, scores, output_len // phrase_len)
-    best_measures = helpers.phrases_to_measures(best_phrases)
-    tokens = helpers.measures_to_tokens(best_measures)
+    best_indices = helpers.best_phrase_indices(phrases, scores, output_len // phrase_len)
+    res_phrases = []
+    res_scores = []
+    for i in best_indices:
+        res_phrases.append(phrases[i])
+        res_scores.append(scores[i])
+
+    print("Final score: " + str(round(np.mean(res_scores), 3)))
+
+    res_measures = helpers.phrases_to_measures(res_phrases)
+    tokens = helpers.measures_to_tokens(res_measures)
     helpers.export_midi(tokens, file_name)
 
 def random_midi():
