@@ -1,0 +1,8 @@
+output1 - relation fitness
+output2 - end fitness
+output3 - full fitness
+output4 - direction fitness
+output5 - random fitness
+
+output6 - Score 89.7
+output7 - Score 85.5

@@ -41,7 +41,7 @@ TOKENIZER = REMI(_pitch_range, _beat_res,
 combined = []
 
 # for midi_name in os.listdir('musicgen/samples/bar_sources'):
-midi_name = "tchaikovksy_sugar_plum.mid"
+midi_name = "schubert_ave_maria.mid"
 for i in range(150):
 
     print('Extracting bars from ' + midi_name)

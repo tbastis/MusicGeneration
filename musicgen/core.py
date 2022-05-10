@@ -93,6 +93,10 @@ def fitness(phrases):
     """
 
     # TODO: modify mutation rate as we get further on in generations/fitness scores
+    # return [random.randint(0, 100) for phrase in phrases]
+    # return [end_fitness(phrase) for phrase in phrases]
+    # return [direction_fitness(phrase) for phrase in phrases]
+    # return [relation_fitness(phrase) for phrase in phrases]
     return [(relation_fitness(phrase) + direction_fitness(phrase) 
     + end_fitness(phrase))/3 for phrase in phrases]
 
