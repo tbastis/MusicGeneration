@@ -6,7 +6,7 @@
 
 Run the following commands to install needed packages.
 
->pip3 install miditok
+>pip install -r requirements.txt
 
 ## MidiTok Explanation
 
