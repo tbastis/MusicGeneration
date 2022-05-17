@@ -20,4 +20,5 @@ python-rtmidi==1.4.9
 requests==2.27.1
 scipy==1.8.0
 six==1.16.0
+textdistance==4.2.2
 urllib3==1.26.9
